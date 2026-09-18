@@ -1,4 +1,4 @@
-import sqlite3,uuid,random,json,webbrowser
+import sqlite3,uuid,random,json,os
 from http.server import BaseHTTPRequestHandler,HTTPServer
 from pathlib import Path
 B=Path(__file__).parent; DB=B/"bharat_voting.db"
@@ -39,4 +39,7 @@ class H(BaseHTTPRequestHandler):
    if c.execute("select 1 from votes where voter=?",(v,)).fetchone():c.close();return self.j({"ok":False,"msg":"Only one vote is allowed."},409)
    tx="BV-"+uuid.uuid4().hex[:16].upper();c.execute("insert into votes values(?,?,?)",(v,party,tx));c.commit();c.close();return self.j({"ok":True,"tx":tx})
   self.j({"ok":False},404)
-init();print("Bharat Voting App: http://localhost:8000");webbrowser.open("http://localhost:8000");HTTPServer(("127.0.0.1",8000),H).serve_forever()
+init()
+port = int(os.environ.get("PORT", 10000))
+print(f"Bharat Voting App running on 0.0.0.0:{port}")
+HTTPServer(("0.0.0.0", port), H).serve_forever()
